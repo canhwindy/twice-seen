@@ -1,7 +1,7 @@
 // Twice Seen hands itself in: copy the static game and its screenshots to the output folder and
 // write the dossier the judge reads, using the kit's own library (vendor/makefun-game.ts).
 // Locally: mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
-import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
@@ -19,6 +19,9 @@ function copyFolder(name: string): void {
 mkdirSync(outDir, { recursive: true });
 copyFolder('game');
 copyFolder('screenshots');
+
+const shots = readdirSync(join(outDir, 'screenshots')).filter((name) => !name.startsWith('.'));
+if (shots.length < 3 || shots.length > 4) console.warn(`Twice Seen: expected 3 or 4 screenshots, found ${shots.length}`);
 
 // The gate's caps: more than 4 screenshots, one over 256 KiB, or a game/ past 993 entries or
 // 48 MiB is refused; the dossier text is capped at 160 KiB.
